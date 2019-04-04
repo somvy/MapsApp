@@ -29,13 +29,22 @@ class MyApplication(QMainWindow, Ui_MainWindow):
             self.plus()
         elif e.key() == Qt.Key_PageDown:
             self.minus()
+        elif e.key() == Qt.Key_Up:
+            self.up()
+        elif e.key() == Qt.Key_Down:
+            self.down()
+        elif e.key() == Qt.Key_Right:
+            self.right()
+        elif e.key() == Qt.Key_Left:
+            self.down()
+
 
     def update(self):
         maps_params = {
             "ll": ','.join([str(self.x_coords), str(self.y_coords)]),
             "l": 'map',
             "spn": ','.join([str(self.scale), str(self.scale)]),
-            "size":'650,450'
+            "size": '650,450'
         }
         maps_response = requests.get(self.maps_api_server, params=maps_params)
         map_file = "map.png"
@@ -67,6 +76,21 @@ class MyApplication(QMainWindow, Ui_MainWindow):
             self.scale = new_scale
         self.update()
 
+    def right(self):
+        self.x_coords += 0.1
+        self.update()
+
+    def left(self):
+        self.x_coords -= 0.1
+        self.update()
+
+    def up(self):
+        self.y_coords += 0.1
+        self.update()
+
+    def down(self):
+        self.y_coords -= 0.1
+        self.update()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
