@@ -21,6 +21,7 @@ class MyApplication(QMainWindow, Ui_MainWindow):
         self.maps_api_server = "https://static-maps.yandex.ru/1.x/"
         self.coder_api_server = "http://geocode-maps.yandex.ru/1.x/"
         self.ispoint = False
+        self.address = None
         self.painter = QPainter()
 
         self.pushButton_Back.clicked.connect(self.back)
@@ -78,6 +79,10 @@ class MyApplication(QMainWindow, Ui_MainWindow):
             sys.exit(2)
         self.pixmap = QPixmap(map_file)
         self.label.setPixmap(self.pixmap)
+        if self.address is not None:
+            self.label_adress.setText(self.address)
+        else:
+            self.label_adress.setText(' ')
         print('update', self.pixmap.isNull())
 
     def minus(self):
@@ -132,7 +137,9 @@ class MyApplication(QMainWindow, Ui_MainWindow):
         coder_response = requests.get(self.coder_api_server, params=coder_params)
         json_response = coder_response.json()
         coords = json_response["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]['Point']['pos'].split()
-        print(coords)
+        toponym = json_response["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]
+        # Полный адрес топонима:
+        self.address = toponym["metaDataProperty"]["GeocoderMetaData"]["text"]
         x, y = coords[0], coords[1]
         self.point_x = x
         self.point_y = y
@@ -140,10 +147,10 @@ class MyApplication(QMainWindow, Ui_MainWindow):
         self.y_coords = y
         self.update()
 
-        print(x)
 
     def back(self):
         self.ispoint = False
+        self.address = None
         self.update()
 
 
