@@ -23,7 +23,7 @@ class MyApplication(QMainWindow, Ui_MainWindow):
         self.ispoint = False
         self.painter = QPainter()
 
-        # self.pushButton_Back.clicked.connect(self.back)
+        self.pushButton_Back.clicked.connect(self.back)
         self.pushButton_Minus.clicked.connect(self.minus)
         self.pushButton_Plus.clicked.connect(self.plus)
         self.pushButton_Search.clicked.connect(self.search)
@@ -36,16 +36,18 @@ class MyApplication(QMainWindow, Ui_MainWindow):
             self.plus()
         elif e.key() == Qt.Key_PageDown:
             self.minus()
-        elif e.key() == Qt.Key_Up:
+        elif e.key() == Qt.Key_Up or e.key() == Qt.Key_W:
             self.up()
-        elif e.key() == Qt.Key_Down:
+        elif e.key() == Qt.Key_Down or e.key() == Qt.Key_S:
             self.down()
-        elif e.key() == Qt.Key_Right:
+        elif e.key() == Qt.Key_Right or e.key() == Qt.Key_D:
             self.right()
-        elif e.key() == Qt.Key_Left:
-            self.down()
+        elif e.key() == Qt.Key_Left or e.key() == Qt.Key_A:
+            self.left()
         elif e.key() == Qt.Key_Enter:
             self.search()
+        elif e.key() == Qt.Key_Backspace:
+            self.back()
 
     def update(self):
         if self.ispoint:
@@ -97,19 +99,19 @@ class MyApplication(QMainWindow, Ui_MainWindow):
         self.update()
 
     def right(self):
-        self.x_coords += 0.1
+        self.x_coords = float(self.x_coords) + self.scale * 0.3
         self.update()
 
     def left(self):
-        self.x_coords -= 0.1
+        self.x_coords = float(self.x_coords) - self.scale * 0.3
         self.update()
 
     def up(self):
-        self.y_coords += 0.1
+        self.y_coords = float(self.y_coords) + self.scale * 0.3
         self.update()
 
     def down(self):
-        self.y_coords = float(self.y_coords) - 0.1
+        self.y_coords = float(self.y_coords) - self.scale*0.3
         self.update()
 
     def change(self):
@@ -140,6 +142,9 @@ class MyApplication(QMainWindow, Ui_MainWindow):
 
         print(x)
 
+    def back(self):
+        self.ispoint = False
+        self.update()
 
 
 if __name__ == '__main__':
