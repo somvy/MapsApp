@@ -76,6 +76,9 @@ class Ui_MainWindow(object):
         self.label_adress.setGeometry(QtCore.QRect(30, 50, 191, 431))
         self.label_adress.setText("")
         self.label_adress.setObjectName("label_adress")
+        self.checkBox_index = QtWidgets.QCheckBox(self.centralwidget)
+        self.checkBox_index.setGeometry(QtCore.QRect(30, 10, 121, 17))
+        self.checkBox_index.setObjectName("checkBox_index")
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
@@ -84,5 +87,6 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        self.checkBox_index.setText(_translate("MainWindow", "Показывать индекс"))
 
 import ForMaps_rc

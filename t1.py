@@ -1,8 +1,6 @@
 import sys
-from PyQt5 import uic
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
-from PyQt5.QtMultimedia import *
 from PyQt5.QtCore import *
 from UI import Ui_MainWindow
 import requests
@@ -21,7 +19,9 @@ class MyApplication(QMainWindow, Ui_MainWindow):
         self.maps_api_server = "https://static-maps.yandex.ru/1.x/"
         self.coder_api_server = "http://geocode-maps.yandex.ru/1.x/"
         self.ispoint = False
+        self.show_index = False
         self.address = None
+        self.index = None
         self.painter = QPainter()
 
         self.pushButton_Back.clicked.connect(self.back)
@@ -29,6 +29,7 @@ class MyApplication(QMainWindow, Ui_MainWindow):
         self.pushButton_Plus.clicked.connect(self.plus)
         self.pushButton_Search.clicked.connect(self.search)
         self.pushButton_Change.clicked.connect(self.change)
+        self.checkBox_index.stateChanged.connect(self.index_changed)
         self.update()
 
     def keyPressEvent(self, e):
@@ -80,7 +81,11 @@ class MyApplication(QMainWindow, Ui_MainWindow):
         self.pixmap = QPixmap(map_file)
         self.label.setPixmap(self.pixmap)
         if self.address is not None:
-            self.label_adress.setText(self.address)
+            if self.show_index:
+                self.label_adress.setText(',\n'.join(self.address.split(','))+'\n' + 'Индекс: ' + self.index)
+            else:
+                self.label_adress.setText(',\n'.join(self.address.split(',')))
+
         else:
             self.label_adress.setText(' ')
         print('update', self.pixmap.isNull())
@@ -116,7 +121,7 @@ class MyApplication(QMainWindow, Ui_MainWindow):
         self.update()
 
     def down(self):
-        self.y_coords = float(self.y_coords) - self.scale*0.3
+        self.y_coords = float(self.y_coords) - self.scale * 0.3
         self.update()
 
     def change(self):
@@ -136,10 +141,15 @@ class MyApplication(QMainWindow, Ui_MainWindow):
         }
         coder_response = requests.get(self.coder_api_server, params=coder_params)
         json_response = coder_response.json()
-        coords = json_response["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]['Point']['pos'].split()
+        coords = json_response["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]['Point'][
+            'pos'].split()
         toponym = json_response["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]
         # Полный адрес топонима:
         self.address = toponym["metaDataProperty"]["GeocoderMetaData"]["text"]
+        try:
+            self.index = json_response["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]['metaDataProperty']['GeocoderMetaData']['Address']['postal_code']
+        except KeyError:
+            self.index = 'Нет индекса'
         x, y = coords[0], coords[1]
         self.point_x = x
         self.point_y = y
@@ -147,10 +157,18 @@ class MyApplication(QMainWindow, Ui_MainWindow):
         self.y_coords = y
         self.update()
 
-
     def back(self):
         self.ispoint = False
         self.address = None
+        self.index = None
+        self.lineEditSearch.setText('')
+        self.update()
+
+    def index_changed(self):
+        if self.show_index:
+            self.show_index = False
+        else:
+            self.show_index = True
         self.update()
 
 
